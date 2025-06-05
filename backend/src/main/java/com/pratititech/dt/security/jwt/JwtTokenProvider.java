@@ -1,7 +1,9 @@
-package com.pratititech.dt.security;
+package com.pratititech.dt.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +12,8 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     private final Key key;
     private final long jwtExpirationInMs;
@@ -54,9 +58,17 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException ex) {
-            // log or handle different JWT exceptions here if needed
-            return false;
+        } catch (ExpiredJwtException ex) {
+            logger.error("JWT token expired: {}", ex.getMessage());
+        } catch (UnsupportedJwtException ex) {
+            logger.error("Unsupported JWT token: {}", ex.getMessage());
+        } catch (MalformedJwtException ex) {
+            logger.error("Malformed JWT token: {}", ex.getMessage());
+        } catch (SignatureException ex) {
+            logger.error("Invalid JWT signature: {}", ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            logger.error("JWT token compact of handler are invalid: {}", ex.getMessage());
         }
+        return false;
     }
 }

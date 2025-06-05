@@ -1,14 +1,17 @@
 package com.pratititech.dt.security;
 
-
 import com.pratititech.dt.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
-public class UserDetailsImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final User user;
 
@@ -49,6 +52,20 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true; // No enable/disable implemented
+        // Only verified users are enabled
+        return user.isVerified();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserDetailsImpl)) return false;
+        UserDetailsImpl that = (UserDetailsImpl) o;
+        return Objects.equals(user.getUserId(), that.user.getUserId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user.getUserId());
     }
 }
