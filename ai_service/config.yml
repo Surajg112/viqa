@@ -1,0 +1,9 @@
+Logging:
+    LogFileName: "ai_service.log"
+    LogDir: "logs"
+    LogLevel: "DEBUG"
+    LogStorageDuration: 30  # in days
+
+
+Artifacts:
+    ArtifactsDirPath: '../artifacts/'
